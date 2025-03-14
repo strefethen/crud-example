@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "install:backend": "cd backend && yarn install",
+    "install:client": "cd client && yarn install",
+    "dev:backend": "cd backend && yarn dev",
+    "dev:client": "cd client && yarn dev",
+    "build": "cd backend && yarn build && cd ../client && yarn build",
+    "clean": "rm -rf apps/*/node_modules apps/*/yarn.lock apps/*/package-lock.json node_modules yarn.lock package-lock.json && yarn install && yarn build"
+  }
+}

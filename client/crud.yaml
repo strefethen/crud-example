@@ -1,0 +1,261 @@
+openapi: 3.1.0
+info:
+  title: CRUD API
+  description: This is a sample CRUD API.
+  termsOfService: http://www.example.com/terms/
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: http://www.example.com/support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.myhost.com
+    description: Production server
+  - url: https://staging-api.myhost.com
+    description: Staging server
+
+tags:
+  - name: Items
+    description: Operations related to items
+
+paths:
+  /api/items:
+    get:
+      tags:
+        - Items
+      summary: Retrieve a list of items
+      description: Fetches a list of all items available in the system. This endpoint does not require any parameters.
+      operationId: getItems
+      responses:
+        '200':
+          description: A list of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+          examples:
+            example1:
+              summary: Example response
+              value:
+                - id: 1
+                  name: Sample Item 1
+                  description: This is a sample item 1.
+                  price: 9.99
+                  createdAt: '2023-01-01T00:00:00Z'
+                - id: 2
+                  name: Sample Item 2
+                  description: This is a sample item 2.
+                  price: 19.99
+                  createdAt: '2023-01-02T00:00:00Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                example1:
+                  summary: Invalid request parameters
+                  value:
+                    code: 400
+                    message: Invalid request parameters
+    post:
+      tags:
+        - Items
+      summary: Create a new item
+      description: Creates a new item in the system. The request body must include the item details.
+      operationId: createItem
+      requestBody:
+        description: The details of the new item to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+            examples:
+              example:
+                summary: Example request
+                value:
+                  name: New Item
+                  description: Description of the new item
+                  price: 15.0
+      responses:
+        '201':
+          description: Item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/items/{id}:
+    get:
+      tags:
+        - Items
+      summary: Retrieve a single item by ID
+      description: Fetches the details of a single item by its ID. The ID must be provided as a path parameter.
+      operationId: getItemById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the item to retrieve. This ID can be obtained from the list of items.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A single item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              example:
+                id: 1
+                name: Sample Item
+                description: This is a sample item.
+                price: 9.99
+                createdAt: '2023-01-01T00:00:00Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 400
+                message: Invalid request parameters
+        '404':
+          description: Item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 404
+                message: Item not found
+    put:
+      tags:
+        - Items
+      summary: Update an existing item by ID
+      description: Updates the details of an existing item by its ID. The ID must be provided as a path parameter, and the request body must include the updated item details.
+      operationId: updateItemById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the item to update. This ID can be obtained from the list of items.
+          schema:
+            type: integer
+      requestBody:
+        description: The updated details of the item.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+            example:
+              name: Updated Item Name
+              description: Updated item description.
+              price: 20.5
+      responses:
+        '200':
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Items
+      summary: Delete an item by ID
+      description: Deletes an existing item by its ID. The ID must be provided as a path parameter.
+      operationId: deleteItemById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the item to delete. This ID can be obtained from the list of items.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Item deleted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Item:
+      type: object
+      description: Represents an item in the system.
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the item.
+        name:
+          type: string
+          description: The name of the item.
+        description:
+          type: string
+          description: A detailed description of the item.
+        price:
+          type: number
+          format: float
+          description: The price of the item.
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time when the item was created.
+      example:
+        id: 1
+        name: Sample Item
+        description: This is a sample item.
+        price: 9.99
+        createdAt: '2023-01-01T00:00:00Z'
+    Error:
+      type: object
+      description: Represents an error response.
+      properties:
+        code:
+          type: integer
+          description: The error code.
+        message:
+          type: string
+          description: A detailed error message.
+      example:
+        summary: Invalid Request
+        value:
+          code: 400
+          message: Invalid request parameters
