@@ -39,20 +39,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Item'
-          examples:
-            example1:
-              summary: Example response
-              value:
-                - id: 1
-                  name: Sample Item 1
-                  description: This is a sample item 1.
-                  price: 9.99
-                  createdAt: '2023-01-01T00:00:00Z'
-                - id: 2
-                  name: Sample Item 2
-                  description: This is a sample item 2.
-                  price: 19.99
-                  createdAt: '2023-01-02T00:00:00Z'
         '400':
           description: Bad Request
           content:
