@@ -7,9 +7,16 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch program",
-      "program": "${workspaceFolder}/src/app.ts",
+      "name": "Launch backend",
+      "program": "${workspaceFolder}/backend/src/app.ts",
       "preLaunchTask": "tsc: build - backend/tsconfig.json"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch client",
+      "program": "${workspaceFolder}/client/src/index.ts",
+      "preLaunchTask": "tsc: build - client/tsconfig.json"
     }
   ]
 }
