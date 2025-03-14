@@ -9,3 +9,7 @@ API.createItem({ name: "New Item", description: "Description", price: 100 }).the
 API.getItems().then((items) => {
   console.log(items);
 });
+
+API.deleteItemById(1).then((response) => {
+  console.log(response);
+});

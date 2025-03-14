@@ -214,6 +214,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/items/count:
+    get:
+      tags:
+        - Items
+      summary: Retrieve the count of items
+      description: Returns the total number of items available in the system.
+      operationId: getItemCount
+      responses:
+        '200':
+          description: The count of items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: The total number of items.
+              example:
+                count: 42
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
 components:
   schemas:
