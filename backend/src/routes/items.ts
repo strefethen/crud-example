@@ -15,6 +15,12 @@ await db.read();
 db.data ||= { items: [] }; // Initialize with an empty array if no data exists
 await db.write();
 
+router.use((req: Request, res: Response, next: Function) => {
+  console.log(req.path);
+  res.set('Content-Type', 'application/json');
+  next();
+});
+
 // GET /api/items - Retrieve all items
 router.get('/api/items', async (req: Request, res: Response<Item[] | ErrorResponse>) => {
   await db.read();
@@ -43,7 +49,7 @@ router.post('/api/items', async (req: Request, res: Response<Item | ErrorRespons
 });
 
 // GET /api/items/:id - Retrieve a single item by ID
-router.get('/api/items/:id', async (req: Request, res: Response<Item | ErrorResponse>) => {
+router.get('/api/items/:id[0-9]*', async (req: Request, res: Response<Item | ErrorResponse>) => {
   const id = parseInt(req.params.id, 10);
   await db.read();
   const item = db.data.items.find((item) => item.id === id);
@@ -56,7 +62,7 @@ router.get('/api/items/:id', async (req: Request, res: Response<Item | ErrorResp
 });
 
 // PUT /api/items/:id - Update an item by ID
-router.put('/api/items/:id', async (req: Request, res: Response<Item | ErrorResponse>) => {
+router.put('/api/items/:id[0-9]*', async (req: Request, res: Response<Item | ErrorResponse>) => {
   const id = parseInt(req.params.id, 10);
   const { name, description, price } = req.body;
 
@@ -77,7 +83,7 @@ router.put('/api/items/:id', async (req: Request, res: Response<Item | ErrorResp
 });
 
 // DELETE /api/items/:id - Delete an item by ID
-router.delete('/api/items/:id', async (req: Request, res: Response<ErrorResponse | void>) => {
+router.delete('/api/items/:id[0-9]*', async (req: Request, res: Response<ErrorResponse | void>) => {
   const id = parseInt(req.params.id, 10);
 
   await db.read();
