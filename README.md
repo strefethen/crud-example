@@ -45,5 +45,5 @@ $ yarn dev:client
 
 ## Run the OAS typescript-axios client
 ```bash
-$ yarn dev:oas-client
+$ yarn dev:oas-client-ts
 ```
