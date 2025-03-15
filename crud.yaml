@@ -236,6 +236,7 @@ components:
         id:
           type: integer
           description: The unique identifier of the item.
+          readOnly: true
         name:
           type: string
           description: The name of the item.
@@ -249,6 +250,7 @@ components:
         createdAt:
           type: string
           format: date-time
+          readOnly: true
           description: The date and time when the item was created.
       example:
         id: 1
