@@ -17,6 +17,20 @@
       "name": "Launch client",
       "program": "${workspaceFolder}/client/src/index.ts",
       "preLaunchTask": "tsc: build - client/tsconfig.json"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch oas-client-ts",
+      "program": "${workspaceFolder}/oas-client-ts/src/index.ts",
+      "preLaunchTask": "tsc: build - oas-client-ts/tsconfig.json"
+    },
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Launch Python Script",
+      "program": "${workspaceFolder}/main.py",
+      "console": "integratedTerminal"
     }
   ]
 }

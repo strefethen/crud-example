@@ -6,8 +6,12 @@
     "install:client": "cd client && yarn install",
     "dev:backend": "cd backend && yarn dev",
     "dev:client": "cd client && yarn dev",
-    "build": "cd backend && yarn build && cd ../client && yarn build",
-    "clean": "rm -rf apps/*/node_modules apps/*/yarn.lock apps/*/package-lock.json node_modules yarn.lock package-lock.json && yarn install && yarn build",
-    "install": "cd client && yarn install && cd ../backend && yarn install"
+    "dev:oas-client-ts": "cd oas-client-ts && yarn dev",
+    "build": "cd backend && yarn build && cd ../client && yarn build && cd .. && yarn oas:generate:typescript && cd oas-client-ts && yarn build",
+    "clean": "rm -rf oas-client-ts/generated && rm -rf */node_modules",
+    "install": "cd client && yarn install && cd ../backend && yarn install && cd ../oas-client-ts && yarn install",
+    "oas:generate:typescript": "java -jar ~/github/openapi-generator-cli.jar generate -i ./crud.yaml -g typescript-axios -t ~/github/openapi-generator/modules/openapi-generator/src/main/resources/typescript-axios --additional-properties artifactId=aria-operations-okhttp-gson,hideGenerationTimestamp=true -o oas-client-ts/generated --skip-operation-example --skip-validate-spec",
+    "oas:generate:java": "java -DmaxYamlCodePoints=99999999 -jar ~/github/openapi-generator-cli.jar generate -i ./crud.yaml -g java -t ~/github/openapi-generator/modules/openapi-generator/src/main/resources/Java --additional-properties artifactId=aria-operations-okhttp-gson,hideGenerationTimestamp=true -o oas-client-java/generated --skip-operation-example --skip-validate-spec",
+    "oas:generate:python": "java -DmaxYamlCodePoints=99999999 -jar ~/github/openapi-generator-cli.jar generate -i ./crud.yaml -g python -t ~/github/openapi-generator/modules/openapi-generator/src/main/resources/python --additional-properties artifactId=aria-operations-okhttp-gson,hideGenerationTimestamp=true -o oas-client-python/generated --skip-operation-example --skip-validate-spec"
   }
 }
