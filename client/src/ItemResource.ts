@@ -67,6 +67,12 @@ export namespace API {
     export type Response400 = ErrorResponse;
     export type Response404 = ErrorResponse;
   }
+
+  export namespace GetItemsCount {
+    export type Response200 = number;
+    export type Response400 = ErrorResponse;
+    export type Response404 = ErrorResponse;
+  }
 }
 
 export class ItemsResource {
@@ -124,6 +130,16 @@ export class ItemsResource {
       await this.axiosInstance.delete<API.DeleteItemById.Response204>(`/api/items/${id}`);
     } catch (error) {
       this.handleError<API.DeleteItemById.Response400 | API.DeleteItemById.Response404>(error);
+    }
+  }
+
+  // GET /api/items/count
+  async getItemsCount(): Promise<number> {
+    try {
+      const response = await this.axiosInstance.get<API.GetItemsCount.Response200>(`/api/items/count`);
+      return response.data;
+    } catch (error) {
+      this.handleError<API.GetItemsCount.Response400 | API.GetItemsCount.Response404>(error);
     }
   }
 
