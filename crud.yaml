@@ -44,7 +44,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
               examples:
                 example1:
                   summary: Invalid request parameters
@@ -83,7 +83,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
   /api/items/{id}:
     get:
       tags:
@@ -116,7 +116,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
               example:
                 code: 400
                 message: Invalid request parameters
@@ -125,7 +125,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
               example:
                 code: 404
                 message: Item not found
@@ -165,13 +165,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
         '404':
           description: Item not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
     delete:
       tags:
         - Items
@@ -193,13 +193,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
         '404':
           description: Item not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
   /api/items/count:
     get:
       tags:
@@ -225,7 +225,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
 
 components:
   schemas:
@@ -258,7 +258,7 @@ components:
         description: This is a sample item.
         price: 9.99
         createdAt: '2023-01-01T00:00:00Z'
-    Error:
+    APIError:
       type: object
       description: Represents an error response.
       properties:
