@@ -1,22 +1,42 @@
 openapi: 3.1.0
 info:
   title: CRUD API
-  description: This is a sample CRUD API.
-  termsOfService: http://www.example.com/terms/
-  version: 1.0.0
+  version: 0.1.0
   contact:
     name: API Support
-    url: http://www.example.com/support
+    url: http://localhost:3000/support
     email: support@example.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
+  description: |
+    # Items REST API
+    The Items API allows you to manage items in the system. You 
+    can retrieve a list of items, create new items, update existing items, 
+    and delete items. The API also provides endpoints to retrieve the 
+    count of items available in the system.
+    
+    ## Getting Started in < 5 minutes with the Items API
+    To request a list of items, you can use the following cURL command:
+    
+    ```bash
+    curl -X GET "http://localhost:3000/api/items" -H "accept: application/json"
+    ```    
+    To create a new item, you can use the following cURL command:
+    
+    ```bash
+    curl -X POST "http://localhost:3000/api/items" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"name\": \"New Item\", \"description\": \"Description of the new item\", \"price\": 15.0}"
+    ```
+
+    ## Authentication
+    The API does not require authentication to access the endpoints.
+
+    ## Versioning
+    The API is currently at version 0.1.0.
 
 servers:
-  - url: https://api.myhost.com
-    description: Production server
-  - url: https://staging-api.myhost.com
-    description: Staging server
+  - url: http://localhost:3000
+    description: Debug Server
 
 tags:
   - name: Items
@@ -37,6 +57,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxLength: 1024
                 items:
                   $ref: '#/components/schemas/Item'
         '400':
@@ -45,12 +66,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
-              examples:
-                example1:
-                  summary: Invalid request parameters
-                  value:
-                    code: 400
-                    message: Invalid request parameters
+        default:
+          description: An unexpected error occurred        
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
     post:
       tags:
         - Items
@@ -84,6 +105,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
+        default:
+          description: An unexpected error occurred        
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
   /api/items/{id}:
     get:
       tags:
@@ -110,7 +137,7 @@ paths:
                 name: Sample Item
                 description: This is a sample item.
                 price: 9.99
-                createdAt: '2023-01-01T00:00:00Z'
+                createdAt: '2023-01-01T00:00:00'
         '400':
           description: Bad Request
           content:
@@ -129,6 +156,12 @@ paths:
               example:
                 code: 404
                 message: Item not found
+        default:
+          description: An unexpected error occurred        
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
     put:
       tags:
         - Items
@@ -149,10 +182,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Item'
-            example:
-              name: Updated Item Name
-              description: Updated item description.
-              price: 20.5
+            examples:
+              example1:
+                summary: Example of an updated item
+                value:
+                  name: Updated Item Name
+                  description: Updated item description.
+                  price: 20.5
       responses:
         '200':
           description: Item updated
@@ -200,6 +236,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
+        default:
+          description: An unexpected error occurred        
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
   /api/items/count:
     get:
       tags:
@@ -213,25 +255,35 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  count:
-                    type: integer
-                    description: The total number of items.
-              example:
-                count: 42
+                $ref: '#/components/schemas/ItemCount'
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
-
+        default:
+          description: An unexpected error occurred        
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
 components:
   schemas:
+    ItemCount:
+      type: object
+      description: The total count of all items
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: The total number of items.
+      example:
+        count: 42
     Item:
       type: object
       description: Represents an item in the system.
+      additionalProperties: false
       properties:
         id:
           type: integer
@@ -252,6 +304,8 @@ components:
           format: date-time
           readOnly: true
           description: The date and time when the item was created.
+          pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+          maxLength: 20
       example:
         id: 1
         name: Sample Item
@@ -259,17 +313,20 @@ components:
         price: 9.99
         createdAt: '2023-01-01T00:00:00Z'
     APIError:
+      additionalProperties: false
       type: object
       description: Represents an error response.
+      required:
+        - code
+        - message
       properties:
         code:
           type: integer
           description: The error code.
         message:
           type: string
+          maxLength: 1024
           description: A detailed error message.
       example:
-        summary: Invalid Request
-        value:
-          code: 400
-          message: Invalid request parameters
+        code: 400
+        message: Invalid request parameters
