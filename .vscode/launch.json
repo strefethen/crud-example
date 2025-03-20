@@ -29,7 +29,7 @@
       "type": "debugpy",
       "request": "launch",
       "name": "Launch Python Script",
-      "program": "${workspaceFolder}/main.py",
+      "program": "${workspaceFolder}/oas-client-python/main.py",
       "console": "integratedTerminal"
     }
   ]
