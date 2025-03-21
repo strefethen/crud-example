@@ -59,14 +59,14 @@ $ yarn dev:oas-client-ts
 # Python
 
 ## Setup
-Setting up the Python client requires several steps. 
+Setting up the Python client requires several steps which are described here and outlined below.
 
 1. Create a Python virtual environment
 2. Activate the new environment and install setuptools
 3. Generate the Python OAS binding 
 4. Install the binding
 
-Once those steps are complete you can run ``src/main.py``. The source for ``main.py`` comes directly from the README.md that's generated with the binding and is an example of calling APIs using the OAS client.
+Once these steps are complete you can run ``src/main.py``. The source for ``main.py`` comes directly from the README.md that's generated with the binding and is an example of calling APIs using the OAS client.
 
 ```bash
 $ cd oas-client-python
