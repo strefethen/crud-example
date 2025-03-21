@@ -12,7 +12,7 @@ This repo includes three projects:
 ## Requirements
 * yarn
 * Typescript v5.4.2+
-* [OpenAPI generator](https://github.com/OpenAPITools/openapi-generator)
+* [OpenAPI generator](https://openapi-generator.tech/docs/installation/)
 
 On macOS you can install the generator using homebrew:
 ```bash
