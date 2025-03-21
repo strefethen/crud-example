@@ -30,7 +30,8 @@
       "request": "launch",
       "name": "Launch Python Script",
       "program": "${workspaceFolder}/oas-client-python/main.py",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "python": "${workspaceFolder}/oas-client-python/env/bin/python"
     }
   ]
 }
