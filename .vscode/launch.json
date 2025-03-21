@@ -15,8 +15,8 @@
       "type": "node",
       "request": "launch",
       "name": "Launch client",
-      "program": "${workspaceFolder}/client/src/index.ts",
-      "preLaunchTask": "tsc: build - client/tsconfig.json"
+      "program": "${workspaceFolder}/ts-client/src/index.ts",
+      "preLaunchTask": "tsc: build - ts-client/tsconfig.json"
     },
     {
       "type": "node",
