@@ -5,18 +5,19 @@ Example client/server calling APIs defined in an OpenAPI spec crud.yaml (located
 This repo includes three projects:
 
 * backend - Simple REST API server
-* client - hand written REST API client
-* oas-client - REST API client using OAS generated typescript binding
-
-```bash
-brew install openapi-generator
-```
+* client - Raw REST API calls
+* [oas-client-ts](#run-the-oas-typescript-axios-client) - REST API client using OAS generated typescript Axios binding
+* [oas-client-python](#python) - REST API client using OAS generated typescript binding
 
 ## Requirements
 * yarn
 * Typescript v5.4.2+
-* OpenAPI generator installed in ~/github/openapi-generator OR via homebrew
-* openapi-generator-cli.jar in ~/githubcd 
+* [OpenAPI generator](https://github.com/OpenAPITools/openapi-generator)
+
+On macOS you can install the generator using homebrew:
+```bash
+brew install openapi-generator
+```
 
 ## Python Requirements
 * Python 3+
@@ -58,6 +59,15 @@ $ yarn dev:oas-client-ts
 # Python
 
 ## Setup
+Setting up the Python client requires several steps. 
+
+1. Create a Python virtual environment
+2. Activate the new environment and install setuptools
+3. Generate the Python OAS binding 
+4. Install the binding
+
+Once those steps are complete you can run ``src/main.py``. The source for ``main.py`` comes directly from the README.md that's generated with the binding and is an example of calling APIs using the OAS client.
+
 ```bash
 $ cd oas-client-python
 # Create python virtual environment for this project
@@ -67,19 +77,22 @@ $ source env/bin/activate
 $ pip install setuptools
 # Generate OAS binding
 $ openapi-generator generate -i ../crud.yaml -g python -o client/generated --additional-properties=pydanticV2=true -o binding --skip-operation-example --skip-validate-spec
-# Change directory to keep client binding isolated
-$ cd client
-$ python generated/setup.py install --user
 # Install 'openapi-client' binding package
 $ pip install clients/generated/.
 ```
 
 ## Run the Python client
+From the root folder of the crud-example project run ``main.py`` and you should see the following output as long as the backend server is running.
+
 ```bash
-$ python src/main.py  
+(.venv) ➜  crud-example git:(main) ✗ python oas-client-python/src/main.py
+The response of ItemsApi->create_item:
+
+Item(id=36, name='New Item', description='Description of the new item', price=15, created_at=datetime.datetime(2025, 3, 21, 21, 17, 10, 123000, tzinfo=TzInfo(UTC)))
+ItemCount(count=36)
 ```
 
-## Resolving the @field_validator Error with the 'created_at' field
+## Resolving the @field_validator error with the 'created_at' field
 When running main.py on an unmodified binding causes an error with the Pydantic field_validator decorator. This needs to be commented out in ``client/generated/openapi-client/models/item.py.
 
 ```bash
