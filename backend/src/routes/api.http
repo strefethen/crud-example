@@ -27,7 +27,7 @@ Authorization: Bearer {{session}}
 
 ####
 
-DELETE {{baseUrl}}/items/59
+DELETE {{baseUrl}}/items/{{getItems.response.body.$[0].id}}
 Authorization: Bearer {{session}}
 
 ####
@@ -48,4 +48,11 @@ Accept: application/json
 
 GET {{baseUrl}}/items/{{itemId}}
 Authorization: Bearer {{session}}
+
+####
+
+GET {{baseUrl}}/items/{{createItem.response.body.$.id}}
+Authorization: Bearer {{session}}
+
+
 
