@@ -43,7 +43,7 @@ tags:
     description: Operations related to Authentication
   - name: Items
     description: Operations related to items
-  - name: Tasks
+  - name: Asynchronous Actions
     description: Operations related to tasks
 
 paths:
@@ -160,7 +160,7 @@ paths:
                 name: Sample Item
                 description: This is a sample item.
                 price: 9.99
-                createdAt: '2023-01-01T00:00:00'
+                createdAt: '2023-01-01T00:00:00Z'
         '400':
           description: Bad Request
           content:
@@ -301,11 +301,11 @@ paths:
   /api/items/{id}/actions:
     post:
       tags:
-        - Items
+        - Asynchronous Actions
       security:
-        - BearerAuth: []  # Required Bearer token for this endpoint
-      description: Initiate an asynchronous action on a foo resource
-      operationId: itemAction
+        - BearerAuth: []
+      description: Initiate an asynchronous action on a Item resource
+      operationId: createItemAction
       parameters:
         - name: id
           in: path
@@ -346,36 +346,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIError'
 
-  /tasks/{task_id}:
-    get:
+  /api/items/{id}/actions-oneOf:
+    post:
       tags:
-        - Tasks
+        - Asynchronous Actions
       security:
         - BearerAuth: []  # Required Bearer token for this endpoint
-      description: Check the status of an asynchronous task
-      operationId: checkTask
+      description: Initiate an asynchronous action on an item using oneOf
+      operationId: createItemOneOfAction
       parameters:
-        - name: task_id
+        - name: id
           in: path
           required: true
-          description: ID of the task to query.
+          description: The ID of the item for the action.
           schema:
             type: string
+      requestBody:
+        required: true
+        description: Wait action details.
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/WaitRequest'
+                - $ref: '#/components/schemas/HoldRequest'
+                - $ref: '#/components/schemas/PauseRequest'
       responses:
         '200':
           description: Task status retrieved successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TaskResponse"
+                $ref: '#/components/schemas/TaskResponse'
         '400':
-          description: Invalid task ID.
+          description: Invalid action ID.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/APIError"
+                $ref: '#/components/schemas/APIError'
         '404':
-          description: Task not found.
+          description: Action not found.
           content:
             application/json:
               schema:
@@ -482,6 +492,45 @@ components:
           description: |
             Optional additional result details, such as new resource size after resize.
           additionalProperties: true
+    WaitRequest:
+      type: object
+      required: [action,length]
+      properties:
+        action:
+          type: string
+          enum: [WAIT]
+          description: The action to perform.
+          example: "WAIT"
+        length:
+          type: integer
+          description: Length of the pause in milliseconds.
+          example: 5
+    HoldRequest:
+      type: object
+      required: [action,duration]
+      properties:
+        action:
+          type: string
+          enum: [HOLD]
+          description: The action to perform.
+          example: "HOLD"
+        duration:
+          type: integer
+          description: Duration of the hold in milliseconds.
+          example: 10
+    PauseRequest:
+      type: object
+      required: [action,seconds]
+      properties:
+        action:
+          type: string
+          enum: [PAUSE]
+          description: Performs the pause action.
+          example: "PAUSE"
+        seconds:
+          type: integer
+          description: Number of milliseconds to pause.
+          example: 5
     Session:
       type: object
       properties:
