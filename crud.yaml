@@ -41,12 +41,16 @@ servers:
 tags:
   - name: Items
     description: Operations related to items
+  - name: Tasks
+    description: Operations related to tasks
 
 paths:
   /api/items:
     get:
       tags:
         - Items
+      security:
+        - BearerAuth: []  # Required Bearer token for this endpoint
       summary: Retrieve a list of items
       description: Fetches a list of all items available in the system. This endpoint does not require any parameters.
       operationId: getItems
@@ -75,6 +79,8 @@ paths:
     post:
       tags:
         - Items
+      security:
+        - BearerAuth: []  # Required Bearer token for this endpoint
       summary: Create a new item
       description: Creates a new item in the system. The request body must include the item details.
       operationId: createItem
@@ -115,6 +121,8 @@ paths:
     get:
       tags:
         - Items
+      security:
+        - BearerAuth: []  # Required Bearer token for this endpoint
       summary: Retrieve a single item by ID
       description: Fetches the details of a single item by its ID. The ID must be provided as a path parameter.
       operationId: getItemById
@@ -165,6 +173,8 @@ paths:
     put:
       tags:
         - Items
+      security:
+        - BearerAuth: []  # Required Bearer token for this endpoint
       summary: Update an existing item by ID
       description: Updates the details of an existing item by its ID. The ID must be provided as a path parameter, and the request body must include the updated item details.
       operationId: updateItemById
@@ -211,6 +221,8 @@ paths:
     delete:
       tags:
         - Items
+      security:
+        - BearerAuth: []  # Required Bearer token for this endpoint
       summary: Delete an item by ID
       description: Deletes an existing item by its ID. The ID must be provided as a path parameter.
       operationId: deleteItemById
@@ -246,6 +258,8 @@ paths:
     get:
       tags:
         - Items
+      security:
+        - BearerAuth: []  # Required Bearer token for this endpoint
       summary: Retrieve the count of items
       description: Returns the total number of items available in the system.
       operationId: getItemCount
@@ -268,7 +282,102 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
+
+  /api/items/{id}/actions:
+    post:
+      tags:
+        - Items
+      security:
+        - BearerAuth: []  # Required Bearer token for this endpoint
+      description: Initiate an asynchronous action on a foo resource
+      operationId: itemAction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the item for the action.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Action details.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskRequest"
+      responses:
+        '202':
+          description: Action accepted, task started.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResult"
+        '400':
+          description: Invalid request parameters or action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Foo resource not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Internal server error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+
+  /tasks/{task_id}:
+    get:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []  # Required Bearer token for this endpoint
+      description: Check the status of an asynchronous task
+      operationId: checkTask
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          description: ID of the task to query.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task status retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        '400':
+          description: Invalid task ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+        '404':
+          description: Task not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  # Optional: You can specify the format (JWT in this case)
   schemas:
     ItemCount:
       type: object
@@ -330,3 +439,31 @@ components:
       example:
         code: 400
         message: Invalid request parameters
+    TaskRequest:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          enum: [resize, reboot, cycle, stretch]
+          description: The action to perform.
+          example: "resize"
+        parameters:
+          type: object
+          description: Optional parameters specific to the action.
+          additionalProperties: true    
+    TaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: string
+          example: "10"
+        status:
+          type: string
+          enum: [WAITING, COMPLETED]
+          example: "COMPLETED"
+        result:
+          type: object
+          description: |
+            Optional additional result details, such as new resource size after resize.
+          additionalProperties: true
