@@ -1,20 +1,114 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import itemsRouter from './routes/items.js';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-// Configure lowdb
-const file = './db.json';
-const adapter = new JSONFile<{ items: any[] }>(file);
-const db = new Low(adapter, { items: [] });
+dotenv.config();
+
+// Very lightweight, simplistic User definition, not intended as a real-world example.
+interface User {
+  username: string;
+  session: string;
+}
+
+interface Item {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  createdAt: string;
+}
+
+interface JSONData {
+  items: Item[];
+  sessions: User[];
+}
+
+const defaultData = { 
+  items: [],
+  sessions: []
+}
+
+// Configure lowdb, extremely light-weight DB for persistence.
+const jsonDB = './db.json';
+const adapter = new JSONFile<JSONData>(jsonDB);
+const db = new Low(adapter, defaultData);
 
 const app = express();
 app.use(express.json());
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(req.path);
+  res.set('Content-Type', 'application/json');
+  next();
+});
+
+function generateSessionToken(username) {
+  return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+}
+
+if (process.env.USE_AUTH && process.env.USE_AUTH === 'true') {
+  app.post('/api/createSession', async (req, res) => {
+    if (!req.body.username) {
+      res.status(400).json({ error: 'Username not specified' });
+      return;
+    }
+    const session = generateSessionToken({ username: req.body.username });
+    const user = db.data.sessions.find((user) => user.username === req.body.username);
+    if (user) {
+      user.session = session;
+    } else {
+      db.data.sessions.push({ username: req.body.username, session: session });
+    }
+    res.json({ session: session });
+  });
+
+  app.use(authenticateToken);
+}
+
 app.use(itemsRouter);
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+
+  if (token == null) return res.sendStatus(401)
+
+  jwt.verify(token, process.env.TOKEN_SECRET as string, (err: any, user: any) => {
+    console.log(err)
+
+    // Simple check that ensures the user is in the DB.
+    if (err || db.data.sessions[user]) return res.sendStatus(403)
+
+    req.user = user
+
+    next()
+  })
+}
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err);  // Log the error or handle it as needed
+
+  // If the error object has a status code set, use it
+  const statusCode = err.status || 500;
+
+  // Set Content-Type to JSON
+  res.setHeader('Content-Type', 'application/json');
+
+  // Send JSON error response with the correct status code
+  res.status(statusCode).json({
+    code: statusCode,
+    message: err.message || 'Internal Server Error',
+    ...(err.details && { details: err.details }), // Optional: additional error details
+  });
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
+  await db.read();
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 

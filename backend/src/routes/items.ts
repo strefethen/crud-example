@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
-import { Item, ErrorResponse } from '../models/item.js';
+import { Item, ErrorResponse, Task, TaskStatus } from '../models/item.js';
 
 const router = Router();
 
@@ -17,20 +17,14 @@ class HttpError extends Error {
 }
 
 // Configure lowdb
-const file = './db.json'; // Path to the database file
-const adapter = new JSONFile<{ items: Item[] }>(file);
-const db = new Low(adapter, { items: [] });
+const file = './db.json'; // Path to the "database" file
+const adapter = new JSONFile<{ items: Item[], tasks: Task[] }>(file);
+const db = new Low(adapter, { items: [], tasks: [] });
 
 // Initialize the database
 await db.read();
-db.data ||= { items: [] }; // Initialize with an empty array if no data exists
+db.data ||= { items: [], tasks: [] }; // Initialize with an empty array if no data exists
 await db.write();
-
-router.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(req.path);
-  res.set('Content-Type', 'application/json');
-  next();
-});
 
 // GET /api/items - Retrieve all items
 router.get('/api/items', async (req: Request, res: Response<Item[] | ErrorResponse>) => {
@@ -102,7 +96,7 @@ router.delete('/api/items/:id([0-9]*)', async (req: Request, res: Response<Error
   const itemIndex = db.data.items.findIndex((item) => item.id === id);
 
   if (itemIndex === -1) {
-    return next(new HttpError(404, "Item not found"));
+    return next(new HttpError(404, `Item not found: ${id}`));
   }
 
   db.data.items.splice(itemIndex, 1);
@@ -117,21 +111,59 @@ router.get('/api/items/count', async (req: Request, res: Response<{ count: numbe
   res.status(200).json({ count });
 });
 
-router.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(err);  // Log the error or handle it as needed
+router.post('/api/items/:id([0-9]*/actions)', async (req, res, next: NextFunction) => {
+  const itemId = parseInt(req.params.id, 10);
 
-  // If the error object has a status code set, use it
-  const statusCode = err.status || 500;
+  await db.read();
+  const itemIndex = db.data.items.findIndex((item) => item.id === itemId);
 
-  // Set Content-Type to JSON
-  res.setHeader('Content-Type', 'application/json');
+  if (itemIndex === -1) {
+    return next(new HttpError(404, `Item not found: ${itemId}`));
+  }
 
-  // Send JSON error response with the correct status code
-  res.status(statusCode).json({
-    code: statusCode,
-    message: err.message || 'Internal Server Error',
-    ...(err.details && { details: err.details }), // Optional: additional error details
-  });
+  const { action } = req.body;
+
+  if (!action){
+    return next(new HttpError(400, 'Invalid request. Missing action'));
+  }
+
+  const task: Task = {
+    id: db.data.tasks.length,
+    itemId: itemId,
+    status: TaskStatus.PENDING,
+    action: action
+  }
+  const index = db.data.tasks.push(task) - 1;
+  res.status(202).json(task);
+  await db.write();
+
+  setTimeout(async () => {
+    db.data.tasks[index].status = TaskStatus.COMPLETED
+    await db.write();
+  }, 10000);
+});
+
+router.get('/api/tasks/:id([0-9]*)', async (req, res, next: NextFunction) => {
+  try {
+    let taskId = -1;
+
+    try {
+      taskId = parseInt(req.params.id, 10);
+    } catch(err) {
+      return next(new HttpError(400, `Invalid task ID: ${req.params.id}`));
+    }
+
+    await db.read();
+    const taskIndex = db.data.tasks.findIndex((task) => task.id === taskId);
+  
+    if (taskIndex === -1) {
+      return next(new HttpError(404, `Task not found: ${taskId}`));
+    }
+  
+    res.status(200).json(db.data.tasks[taskIndex]);  
+  } catch(err) {
+    return next(new HttpError(500, `Unknown Error: ${err.message}`));
+  }
 });
 
 export default router;
