@@ -1,18 +1,31 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
-import { Item, ErrorResponse, Task, TaskStatus } from '../models/item.js';
+import { Item, ErrorResponse, Task, TaskStatus, ItemAction } from '../models/item.js';
 
 const router = Router();
 
-class HttpError extends Error {
-  status: number;
+export class APIError extends Error {
+  statusCode: number;
+  details: object;
 
-  constructor(status: number, message: string) {
-    super(message); // Call the base class constructor with the message
-    this.status = status; // Set the status code
-    this.name = this.constructor.name; // Set the error name to the class name
-    Object.setPrototypeOf(this, HttpError.prototype); // Set the prototype correctly
+  constructor(statusCode: number, message: string) {
+    super(message);
+    this.statusCode = statusCode;
+    this.name = 'APIError';
+
+    // Maintains proper prototype chain (important for custom Error subclasses)
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+
+  toJSON() {
+    return {
+      error: {
+        statusCode: this.statusCode,
+        message: this.message || 'Internal Server Error',
+        ...(this.details && { details: this.details }), // Optional: additional error details
+      },
+    };
   }
 }
 
@@ -36,8 +49,8 @@ router.get('/api/items', async (req: Request, res: Response<Item[] | ErrorRespon
 router.post('/api/items', async (req: Request, res: Response<Item | ErrorResponse>, next: NextFunction) => {
   const { name, description, price } = req.body;
 
-  if (!name || !description || price === undefined) {
-    return next(new HttpError(400, 'Invalid request parameters'));
+  if (!name || !description || !price === undefined) {
+    return next(new APIError(400, 'Invalid request parameters'));
   }
 
   const newItem: Item = {
@@ -60,7 +73,7 @@ router.get('/api/items/:id([0-9]*)', async (req: Request, res: Response<Item | E
   const item = db.data.items.find((item) => item.id === id);
 
   if (!item) {
-    return next(new HttpError(404, 'Item not found'));
+    return next(new APIError(404, 'Item not found'));
   }
 
   res.status(200).json(item);
@@ -69,17 +82,18 @@ router.get('/api/items/:id([0-9]*)', async (req: Request, res: Response<Item | E
 // PUT /api/items/:id - Update an item by ID
 router.put('/api/items/:id([0-9]*)', async (req: Request, res: Response<Item | ErrorResponse>, next: NextFunction) => {
   const id = parseInt(req.params.id, 10);
+
   const { name, description, price } = req.body;
 
   await db.read();
   const itemIndex = db.data.items.findIndex((item) => item.id === id);
 
   if (itemIndex === -1) {
-    return next(new HttpError(404, 'Item not found'));
+    return next(new APIError(404, 'Item not found'));
   }
 
   if (!name || !description || price === undefined) {
-    return next(new HttpError(400, 'Invalid request parameters'));
+    return next(new APIError(400, 'Invalid request parameters'));
   }
 
   db.data.items[itemIndex] = { ...db.data.items[itemIndex], name, description, price };
@@ -89,14 +103,13 @@ router.put('/api/items/:id([0-9]*)', async (req: Request, res: Response<Item | E
 
 // DELETE /api/items/:id - Delete an item by ID
 router.delete('/api/items/:id([0-9]*)', async (req: Request, res: Response<ErrorResponse | void>, next: NextFunction) => {
-  console.log("Delete")
-  const id = parseInt(req.params.id, 10);
+  const itemId = parseInt(req.params.id, 10);
 
   await db.read();
-  const itemIndex = db.data.items.findIndex((item) => item.id === id);
+  const itemIndex = db.data.items.findIndex((item) => item.id === itemId);
 
   if (itemIndex === -1) {
-    return next(new HttpError(404, `Item not found: ${id}`));
+    return next(new APIError(404, `Item not found: ${itemId}`));
   }
 
   db.data.items.splice(itemIndex, 1);
@@ -118,13 +131,17 @@ router.post('/api/items/:id([0-9]*/actions)', async (req, res, next: NextFunctio
   const itemIndex = db.data.items.findIndex((item) => item.id === itemId);
 
   if (itemIndex === -1) {
-    return next(new HttpError(404, `Item not found: ${itemId}`));
+    return next(new APIError(404, `Item not found: ${itemId}`));
   }
 
   const { action } = req.body;
 
   if (!action){
-    return next(new HttpError(400, 'Invalid request. Missing action'));
+    return next(new APIError(400, 'Invalid request. No action specified.'));
+  }
+
+  if (!(action in ItemAction)) {
+    return next(new APIError(400, `Invalid request. Action ${action} not supported.`));
   }
 
   const task: Task = {
@@ -143,27 +160,79 @@ router.post('/api/items/:id([0-9]*/actions)', async (req, res, next: NextFunctio
   }, 10000);
 });
 
-router.get('/api/tasks/:id([0-9]*)', async (req, res, next: NextFunction) => {
-  try {
-    let taskId = -1;
+router.post('/api/items/:id([0-9]*/actions-oneOf)', async (req, res, next: NextFunction) => {
+  const itemId = parseInt(req.params.id, 10);
 
-    try {
-      taskId = parseInt(req.params.id, 10);
-    } catch(err) {
-      return next(new HttpError(400, `Invalid task ID: ${req.params.id}`));
-    }
+  await db.read();
+  const itemIndex = db.data.items.findIndex((item) => item.id === itemId);
 
-    await db.read();
-    const taskIndex = db.data.tasks.findIndex((task) => task.id === taskId);
-  
-    if (taskIndex === -1) {
-      return next(new HttpError(404, `Task not found: ${taskId}`));
-    }
-  
-    res.status(200).json(db.data.tasks[taskIndex]);  
-  } catch(err) {
-    return next(new HttpError(500, `Unknown Error: ${err.message}`));
+  if (itemIndex === -1) {
+    return next(new APIError(404, `Item not found: ${itemId}`));
   }
+
+  const { action } = req.body;
+
+  if (!action){
+    return next(new APIError(400, 'Invalid request. No action specified.'));
+  }
+
+  if (!(action in ItemAction)) {
+    return next(new APIError(400, `Invalid request. Action ${action} not supported. Supported actions are: ${Object.keys(ItemAction).filter(key => isNaN(Number(key))).join(', ')}`));
+  }
+
+  const { length, duration, seconds } = req.body;
+
+  if (!length && !duration && !seconds) {
+    return next(new APIError(400, `Invalid request. Missing action ${action} properties.`));
+  }
+  switch (action) {
+    case ItemAction.WAIT:
+      if (!length) {
+        return next(new APIError(400, 'Invalid request. WaitAction requires a "length" parameter.'));
+      }
+      break;
+    case ItemAction.PAUSE:
+      if (!duration) {
+        return next(new APIError(400, 'Invalid request. PauseAction requires a "duration" parameter.'));
+      }
+      break;
+    case ItemAction.DELAY:
+      if (!seconds) {
+        return next(new APIError(400, 'Invalid request. DelayAction requires a "seconds" parameter.'));
+      }
+      break;
+    default:
+      break;
+  }
+  const task: Task = {
+    id: db.data.tasks.length,
+    itemId: itemId,
+    status: TaskStatus.PENDING,
+    action: action
+  }
+  const index = db.data.tasks.push(task) - 1;
+  res.status(202).json(task);
+  await db.write();
+
+  const delay = length || duration || seconds || 10000;
+
+  setTimeout(async () => {
+    db.data.tasks[index].status = TaskStatus.COMPLETED
+    await db.write();
+  }, delay);
+});
+
+router.get('/api/tasks/:id([0-9]*)', async (req, res, next: NextFunction) => {
+  const taskId = parseInt(req.params.id, 10);
+
+  await db.read();
+  const taskIndex = db.data.tasks.findIndex((task) => task.id === taskId);
+
+  if (taskIndex === -1) {
+    return next(new APIError(404, `Task not found: ${taskId}`));
+  }
+
+  res.status(200).json(db.data.tasks[taskIndex]);  
 });
 
 export default router;
