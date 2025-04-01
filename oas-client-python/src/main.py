@@ -9,6 +9,22 @@ configuration = openapi_client.Configuration(
 )
 
 
+with openapi_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = openapi_client.AuthenticationApi(api_client)
+    username = 'admin' # str | The username of the user
+    try:
+        # Login to the API
+        api_response = api_instance.create_session(session_request={"username": username})
+        print("The response of AuthenticationApi->create_session:\n")
+        pprint(api_response)
+    except ApiException as e:
+        print("Exception when calling AuthenticationApi->create_session: %s\n" % e)
+
+# Configure Bearer authorization (JWT): BearerAuth
+configuration = openapi_client.Configuration(
+    access_token = api_response.token,
+)
 
 # Enter a context with an instance of the API client
 with openapi_client.ApiClient(configuration) as api_client:
