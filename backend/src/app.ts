@@ -1,40 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
-import itemsRouter from './routes/items.js';
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node';
+import itemsRouter, { APIError } from './routes/items.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { db } from './db.js';
 
 dotenv.config();
-
-// Very lightweight, simplistic User definition, not intended as a real-world example.
-interface User {
-  username: string;
-  session: string;
-}
-
-interface Item {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  createdAt: string;
-}
-
-interface JSONData {
-  items: Item[];
-  sessions: User[];
-}
-
-const defaultData = { 
-  items: [],
-  sessions: []
-}
-
-// Configure lowdb, extremely light-weight DB for persistence.
-const jsonDB = './db.json';
-const adapter = new JSONFile<JSONData>(jsonDB);
-const db = new Low(adapter, defaultData);
 
 const app = express();
 app.use(express.json());
@@ -89,11 +59,21 @@ function authenticateToken(req, res, next) {
   })
 }
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(new APIError(404, `${req.method} ${req.originalUrl} not found.`));
+});
+
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err);  // Log the error or handle it as needed
 
   // If the error object has a status code set, use it
   const statusCode = err.status || 500;
+
+  if (err instanceof APIError) {
+    return res.status(err.statusCode).json(err.toJSON());
+  }
+
+  res.status(500).json({error: { message: "Internal Server Error"}});
 
   // Set Content-Type to JSON
   res.setHeader('Content-Type', 'application/json');
@@ -110,7 +90,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, async () => {
   await db.read();
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`API Server is running on http://localhost:${PORT}`);
 });
 
 // Graceful shutdown

@@ -12,8 +12,27 @@ export enum TaskStatus {
 }
 
 export enum ItemAction {
-  WAIT = 0,
+  DELAY = "DELAY",
+  WAIT = "WAIT",
+  HOLD = "HOLD",
+  PAUSE = "PAUSE"
 }
+
+export interface WaitAction {
+  action: ItemAction.WAIT,
+  length: number
+}
+
+export interface HoldAction {
+  action: ItemAction.HOLD,
+  duration: number
+}
+
+export interface PauseAction {
+  action: ItemAction.PAUSE,
+  seconds: number
+}
+
 export interface Task {
   id: number;
   itemId: number;
