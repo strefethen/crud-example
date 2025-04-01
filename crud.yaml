@@ -39,12 +39,27 @@ servers:
     description: Debug Server
 
 tags:
+  - name: Authentication
+    description: Operations related to Authentication
   - name: Items
     description: Operations related to items
   - name: Tasks
     description: Operations related to tasks
 
 paths:
+  /api/createSession:
+    post:
+      tags:
+        - Authentication
+      operationId: createSession
+      description: Create a session bearer token for subsequent API calls passed via the Authorization header.
+      responses:
+        '200':
+          description: A list of items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
   /api/items:
     get:
       tags:
@@ -304,14 +319,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskRequest"
+              $ref: '#/components/schemas/TaskRequest'
       responses:
         '202':
           description: Action accepted, task started.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TaskResult"
+                $ref: '#/components/schemas/TaskResponse'
         '400':
           description: Invalid request parameters or action.
           content:
@@ -467,3 +482,10 @@ components:
           description: |
             Optional additional result details, such as new resource size after resize.
           additionalProperties: true
+    Session:
+      type: object
+      properties:
+        session:
+          type: string
+          description: JWT Bearer token
+        
