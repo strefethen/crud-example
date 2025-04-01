@@ -26,14 +26,14 @@ if (process.env.USE_AUTH && process.env.USE_AUTH === 'true') {
       res.status(400).json({ error: 'Username not specified' });
       return;
     }
-    const session = generateSessionToken({ username: req.body.username });
+    const token = generateSessionToken({ username: req.body.username });
     const user = db.data.sessions.find((user) => user.username === req.body.username);
     if (user) {
-      user.session = session;
+      user.session = token;
     } else {
-      db.data.sessions.push({ username: req.body.username, session: session });
+      db.data.sessions.push({ username: req.body.username, token });
     }
-    res.json({ session: session });
+    res.json({ token });
   });
 
   app.use(authenticateToken);
