@@ -12,6 +12,7 @@
     "install": "cd client && yarn install && cd ../backend && yarn install && cd ../oas-client-ts && yarn install",
     "oas:generate:typescript": "export JAVA_OPTS='-DmaxYamlCodePoints=99999999' && openapi-generator generate -i ./crud.yaml -g typescript-axios -t ~/github/openapi-generator/modules/openapi-generator/src/main/resources/typescript-axios --additional-properties=supportsES6=false -o oas-client-ts/generated --skip-operation-example --skip-validate-spec",
     "oas:generate:java": "export JAVA_OPTS='-DmaxYamlCodePoints=99999999' && openapi-generator generate -i ./crud.yaml -g java -t ~/github/openapi-generator/modules/openapi-generator/src/main/resources/Java -o oas-client-java/client/generated --skip-operation-example --skip-validate-spec",
-    "oas:generate:python": "export JAVA_OPTS='-DmaxYamlCodePoints=99999999' && openapi-generator generate -i ./crud.yaml -g python -t ~/github/openapi-generator/modules/openapi-generator/src/main/resources/python --additional-properties=pydanticV2=true -o oas-client-python/clients/generated --skip-operation-example --skip-validate-spec"
+    "oas:generate:python": "export JAVA_OPTS='-DmaxYamlCodePoints=99999999' && openapi-generator generate -i ./crud.yaml -g python -t ~/github/openapi-generator/modules/openapi-generator/src/main/resources/python --additional-properties=pydanticV2=true -o oas-client-python/clients/generated --skip-operation-example --skip-validate-spec",
+    "generate:docs": "openapi-generator generate -i crud.yaml -g html2 -o docs/api"    
   }
 }
