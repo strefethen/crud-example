@@ -65,7 +65,43 @@ Content-Type: application/json
 Authorization: Bearer {{session}}
 
 {
-  "action": "WAIT"
+  "action": "DELAY"
+}
+
+####
+
+# @name createTask
+POST {{baseUrl}}/items/10/actions-oneOf HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{session}}
+
+{
+  "action": "WAIT",
+  "length": 1000
+}
+
+####
+
+# @name createTask
+POST {{baseUrl}}/items/foo/actions-oneOf HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{session}}
+
+{
+  "action": "HOLD",
+  "duration": 3000
+}
+
+####
+
+# @name createTask
+POST {{baseUrl}}/items/10/actions-oneOf HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{session}}
+
+{
+  "action": "PAUSE",
+  "seconds": 3000
 }
 
 ####
@@ -73,6 +109,7 @@ Authorization: Bearer {{session}}
 @taskId = {{createTask.response.body.$.id}}
 
 GET {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{session}}
 
 ####
 
