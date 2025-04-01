@@ -53,13 +53,18 @@ paths:
         - Authentication
       operationId: createSession
       description: Create a session bearer token for subsequent API calls passed via the Authorization header.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionRequest'
       responses:
         '200':
-          description: A list of items
+          description: JWT token to be used with Authentication Bearer token header
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Session"
+                $ref: '#/components/schemas/SessionResponse'
   /api/items:
     get:
       tags:
@@ -531,10 +536,20 @@ components:
           type: integer
           description: Number of milliseconds to pause.
           example: 5
-    Session:
+    SessionRequest:
+      description: User for which to create a new session
+      type: object
+      required: [username]
+      properties:
+        username: 
+          type: string
+          example: "strefethen"
+    SessionResponse:
+      description: Authentication successful, JWT token returned
       type: object
       properties:
-        session:
+        token:
           type: string
-          description: JWT Bearer token
+          description: JWT Toke for use with Authentication Bearer token header
+          example: "eyEhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InN0ZXZlIiwiaWF0IjoxNzQzNTMyMDkzLCJleHAiOjE3NDM1MzM4OTN9.7-WtngihYl5WKEzonJILRy_Sc0aFTrEbj3dRdTTAWRY"
         
