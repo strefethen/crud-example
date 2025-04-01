@@ -38,6 +38,7 @@ const db = new Low(adapter, defaultData);
 
 const app = express();
 app.use(express.json());
+app.disable("x-powered-by")
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(req.path);
