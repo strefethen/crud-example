@@ -6,14 +6,21 @@ import { User } from './models/user.js';
 interface JSONData {
   items: Item[];
   sessions: User[];
+  tasks: []
 }
 
 const defaultData = { 
   items: [],
-  sessions: []
+  sessions: [],
+  tasks: []
 }
 
-// Configure lowdb, extremely light-weight DB for persistence.
-const jsonDB = './db.json';
-const adapter = new JSONFile<JSONData>(jsonDB);
+// Configure lowdb
+const file = './db.json'; // Path to the "database" file
+const adapter = new JSONFile<JSONData>(file);
 export const db = new Low(adapter, defaultData);
+
+// Initialize the database
+await db.read();
+db.data ||= defaultData; // Initialize with an empty array if no data exists
+await db.write();
