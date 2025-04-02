@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { Item, ErrorResponse, Task, TaskStatus, ItemAction } from '../models/item.js';
+import { db } from '../db.js';
 
 const router = Router();
 
@@ -28,16 +29,6 @@ export class APIError extends Error {
     };
   }
 }
-
-// Configure lowdb
-const file = './db.json'; // Path to the "database" file
-const adapter = new JSONFile<{ items: Item[], tasks: Task[] }>(file);
-const db = new Low(adapter, { items: [], tasks: [] });
-
-// Initialize the database
-await db.read();
-db.data ||= { items: [], tasks: [] }; // Initialize with an empty array if no data exists
-await db.write();
 
 // GET /api/items - Retrieve all items
 router.get('/api/items', async (req: Request, res: Response<Item[] | ErrorResponse>) => {
