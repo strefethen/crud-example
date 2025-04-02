@@ -8,7 +8,6 @@ configuration = openapi_client.Configuration(
     host = "http://localhost:3000"
 )
 
-
 with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = openapi_client.AuthenticationApi(api_client)
@@ -23,6 +22,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 
 # Configure Bearer authorization (JWT): BearerAuth
 configuration = openapi_client.Configuration(
+    host = "http://localhost:3000",
     access_token = api_response.token,
 )
 
@@ -39,5 +39,7 @@ with openapi_client.ApiClient(configuration) as api_client:
         pprint(api_response)
         api_response = api_instance.get_item_count()
         pprint(api_response)
+        api_response = api_instance.get_items()
+        pprint(api_response)
     except ApiException as e:
-        print("Exception when calling ItemsApi->create_item: %s\n" % e)
+        print("Exception: %s\n" % e)
