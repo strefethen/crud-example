@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: CRUD API
-  version: 0.1.0
+  version: 0.2.0
   contact:
     name: API Support
     url: http://localhost:3000/support
@@ -161,7 +161,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Item'
               example:
-                id: 1
+                id: "eyEhbGciOiJIUz"
                 name: Sample Item
                 description: This is a sample item.
                 price: 9.99
@@ -252,7 +252,7 @@ paths:
           required: true
           description: The unique identifier of the item to delete. This ID can be obtained from the list of items.
           schema:
-            type: integer
+            type: string
       responses:
         '204':
           description: Item deleted
@@ -425,9 +425,10 @@ components:
       additionalProperties: false
       properties:
         id:
-          type: integer
+          type: string
           description: The unique identifier of the item.
           readOnly: true
+          pattern: '^[A-Za-z0-9_-]*$'
         name:
           type: string
           description: The name of the item.
@@ -446,7 +447,7 @@ components:
           pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
           maxLength: 20
       example:
-        id: 1
+        id: "eyEhbGciOiJIUz"
         name: Sample Item
         description: This is a sample item.
         price: 9.99
