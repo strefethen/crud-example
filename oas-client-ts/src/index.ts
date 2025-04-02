@@ -1,4 +1,7 @@
 import * as API from '../client/generated';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const configuration: API.Configuration = {
   basePath: 'http://localhost:3000',
@@ -11,9 +14,13 @@ const configuration: API.Configuration = {
 const authAPI = new API.AuthenticationApi(configuration);
 
 (async () => {
-  const session = await authAPI.createSession({ username: 'stevet' })
-  console.log(authAPI);
-  configuration.accessToken = session.data.token;
+  var session = null;
+  if (process.env.USE_AUTH == 'true') {
+    session = await authAPI.createSession({ username: 'stevet' })
+    configuration.accessToken = session?.data.token;
+    console.log(authAPI);
+  }
+
   const itemsApi = new API.ItemsApi(
     configuration
   );
@@ -34,12 +41,12 @@ const authAPI = new API.AuthenticationApi(configuration);
     console.error(error);
   });  
 
-  const getCount = await itemsAPI.getItemCount();
-  console.log(getCount.data.count);
+  const getItems = await itemsAPI.getItems();
   
-  await itemsAPI.deleteItemById(getCount.data.count - 1).catch((error) => {
+  await itemsAPI.deleteItemById(getItems.data[0].id).catch((error) => {
     console.error(error);
   });
+
 })().catch((err) => {
   console.log('Error: ' + err);
 });
