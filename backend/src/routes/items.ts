@@ -3,7 +3,9 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { Item, ErrorResponse, Task, TaskStatus, ItemAction } from '../models/item.js';
 import { db } from '../db.js';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet("ABC123456789", 5);
 
 const router = Router();
 
@@ -50,7 +52,7 @@ router.post('/api/items', async (req: Request, res: Response<Item | ErrorRespons
     name,
     description,
     price,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date().toISOString(),  // remove decimal
   };
 
   db.data.items.push(newItem);
@@ -59,7 +61,7 @@ router.post('/api/items', async (req: Request, res: Response<Item | ErrorRespons
 });
 
 // GET /api/items/:id - Retrieve a single item by ID
-router.get('/api/items/:id([A-Za-z0-9_-]*)', async (req: Request, res: Response<Item | ErrorResponse>, next: NextFunction) => {
+router.get('/api/items/:id([A-Z0-9_-]*)', async (req: Request, res: Response<Item | ErrorResponse>, next: NextFunction) => {
   const id = req.params.id;
   await db.read();
   const item = db.data.items.find((item) => item.id === id);
@@ -72,7 +74,7 @@ router.get('/api/items/:id([A-Za-z0-9_-]*)', async (req: Request, res: Response<
 });
 
 // PUT /api/items/:id - Update an item by ID
-router.put('/api/items/:id([A-Za-z0-9_-]*)', async (req: Request, res: Response<Item | ErrorResponse>, next: NextFunction) => {
+router.put('/api/items/:id([A-Z0-9_-]*)', async (req: Request, res: Response<Item | ErrorResponse>, next: NextFunction) => {
   const id = req.params.id;
 
   const { name, description, price } = req.body;
@@ -94,14 +96,14 @@ router.put('/api/items/:id([A-Za-z0-9_-]*)', async (req: Request, res: Response<
 });
 
 // DELETE /api/items/:id - Delete an item by ID
-router.delete('/api/items/:id([A-Za-z0-9_-]*)', async (req: Request, res: Response<ErrorResponse | void>, next: NextFunction) => {
+router.delete('/api/items/:id([A-Z0-9_-]*)', async (req: Request, res: Response<ErrorResponse | void>, next: NextFunction) => {
   const itemId = req.params.id;
 
   await db.read();
   const itemIndex = db.data.items.findIndex((item) => item.id === itemId);
 
   if (itemIndex === -1) {
-    return next(new APIError(404, `Item not found: ${itemId}`));
+    return next(new APIError(404, `: ${itemId}`));
   }
 
   db.data.items.splice(itemIndex, 1);
@@ -116,7 +118,7 @@ router.get('/api/items/count', async (req: Request, res: Response<{ count: numbe
   res.status(200).json({ count });
 });
 
-router.post('/api/items/:id([A-Za-z0-9_-]*/actions)', async (req, res, next: NextFunction) => {
+router.post('/api/items/:id([A-Z0-9_-]*/actions)', async (req, res, next: NextFunction) => {
   const itemId = req.params.id;
 
   await db.read();
@@ -152,7 +154,7 @@ router.post('/api/items/:id([A-Za-z0-9_-]*/actions)', async (req, res, next: Nex
   }, 10000);
 });
 
-router.post('/api/items/:id([A-Za-z0-9_-]*/actions-oneOf)', async (req, res, next: NextFunction) => {
+router.post('/api/items/:id([A-Z0-9_-]*/actions-oneOf)', async (req, res, next: NextFunction) => {
   const itemId = req.params.id;
 
   await db.read();
@@ -214,7 +216,7 @@ router.post('/api/items/:id([A-Za-z0-9_-]*/actions-oneOf)', async (req, res, nex
   }, delay);
 });
 
-router.get('/api/tasks/:id([A-Za-z0-9_-]*)', async (req, res, next: NextFunction) => {
+router.get('/api/tasks/:id([A-Z0-9_-]*)', async (req, res, next: NextFunction) => {
   const taskId = req.params.id;
 
   await db.read();
