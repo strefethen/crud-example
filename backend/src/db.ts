@@ -1,6 +1,6 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
-import { Item} from './models/item.js';
+import { Item } from './models/item.js';
 import { User } from './models/user.js';
 
 interface JSONData {

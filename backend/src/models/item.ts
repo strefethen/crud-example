@@ -1,5 +1,5 @@
 export interface Item {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -34,8 +34,8 @@ export interface PauseAction {
 }
 
 export interface Task {
-  id: number;
-  itemId: number;
+  id: string;
+  itemId: string;
   status: TaskStatus
   action: ItemAction
 }
