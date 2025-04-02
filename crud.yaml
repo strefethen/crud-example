@@ -161,7 +161,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Item'
               example:
-                id: "eyEhbGciOiJIUz"
+                id: "ABC123"
                 name: Sample Item
                 description: This is a sample item.
                 price: 9.99
@@ -428,7 +428,7 @@ components:
           type: string
           description: The unique identifier of the item.
           readOnly: true
-          pattern: '^[A-Za-z0-9_-]*$'
+          pattern: '^[ABC0-9]{1,10}$'
         name:
           type: string
           description: The name of the item.
@@ -444,14 +444,12 @@ components:
           format: date-time
           readOnly: true
           description: The date and time when the item was created.
-          pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
-          maxLength: 20
       example:
-        id: "eyEhbGciOiJIUz"
+        id: "ABC123"
         name: Sample Item
         description: This is a sample item.
         price: 9.99
-        createdAt: '2023-01-01T00:00:00Z'
+        createdAt: '2023-01-01T00:00:00'
     APIError:
       additionalProperties: false
       type: object
