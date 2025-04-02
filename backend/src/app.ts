@@ -29,10 +29,16 @@ if (process.env.USE_AUTH && process.env.USE_AUTH === 'true') {
     const token = generateSessionToken({ username: req.body.username });
     const user = db.data.sessions.find((user) => user.username === req.body.username);
     if (user) {
-      user.session = token;
+      user.token = token;
     } else {
-      db.data.sessions.push({ username: req.body.username, token });
+      const sessionIndex = db.data.sessions.push({ username: req.body.username, token });
+      setTimeout(async () => {
+        console.log(`Session expire user: ${db.data.sessions[sessionIndex - 1].username}`);
+        db.data.sessions = db.data.sessions.splice(sessionIndex, 1);
+        await db.write();
+      }, 5000);
     }
+    await db.write();
     res.json({ token });
   });
 
@@ -51,7 +57,9 @@ function authenticateToken(req, res, next) {
     console.log(err)
 
     // Simple check that ensures the user is in the DB.
-    if (err || db.data.sessions[user]) return res.sendStatus(403)
+    if (err || !db.data.sessions.find((session) => user.username === session.username)) {
+      return res.sendStatus(403)
+    }
 
     req.user = user
 
