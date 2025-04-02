@@ -11,6 +11,9 @@
       "args": [
         "${relativeFile}"
       ],
+      "env": {
+        "USE_AUTH": "true"
+      },
       "runtimeArgs": [
         "-r",
         "ts-node/register"
