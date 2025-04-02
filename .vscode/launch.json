@@ -10,7 +10,7 @@
       "name": "Launch backend",
       "program": "${workspaceFolder}/backend/src/app.ts",
       "env": {
-        "USE_AUTH": false
+        "USE_AUTH": "true"
       },
       "cwd": "${workspaceFolder}/backend",
       "preLaunchTask": "tsc: build - backend/tsconfig.json"
@@ -35,7 +35,8 @@
       "name": "Launch Python Script",
       "program": "${workspaceFolder}/oas-client-python/src/main.py",
       "console": "integratedTerminal",
-      "python": "${workspaceFolder}/oas-client-python/env/bin/python"
+      "python": "${workspaceFolder}/oas-client-python/env/bin/python",
+      "cwd": "${workspaceFolder}/oas-client-python"
     }
   ]
 }
