@@ -5,6 +5,7 @@
 
 # @name createSession
 POST {{baseUrl}}/createSession HTTP/1.1
+Accept: application/json
 Content-Type: application/json
 
 {
@@ -19,6 +20,7 @@ Content-Type: application/json
 
 # @name createItem
 POST {{baseUrl}}/items  HTTP/1.1
+Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{session}}
 
@@ -31,11 +33,13 @@ Authorization: Bearer {{session}}
 ####
 
 DELETE {{baseUrl}}/items/{{getItems.response.body.$[0].id}}
+Accept: application/json
 Authorization: Bearer {{session}}
 
 ####
 
 GET {{baseUrl}}/items/{{createItem.response.body.$.id}}
+Accept: application/json
 Authorization: Bearer {{session}}
 
 ####
@@ -50,17 +54,20 @@ Accept: application/json
 @itemId = {{createItem.response.body.$.id}}
 
 GET {{baseUrl}}/items/{{itemId}}
+Accept: application/json
 Authorization: Bearer {{session}}
 
 ####
 
 GET {{baseUrl}}/items/{{createItem.response.body.$.id}}
+Accept: application/json
 Authorization: Bearer {{session}}
 
 ####
 
 # @name createTask
 POST {{baseUrl}}/items/10/actions HTTP/1.1
+Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{session}}
 
@@ -72,6 +79,7 @@ Authorization: Bearer {{session}}
 
 # @name createTask
 POST {{baseUrl}}/items/10/actions-oneOf HTTP/1.1
+Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{session}}
 
@@ -84,6 +92,7 @@ Authorization: Bearer {{session}}
 
 # @name createTask
 POST {{baseUrl}}/items/foo/actions-oneOf HTTP/1.1
+Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{session}}
 
@@ -96,6 +105,7 @@ Authorization: Bearer {{session}}
 
 # @name createTask
 POST {{baseUrl}}/items/10/actions-oneOf HTTP/1.1
+Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{session}}
 
@@ -109,6 +119,7 @@ Authorization: Bearer {{session}}
 @taskId = {{createTask.response.body.$.id}}
 
 GET {{baseUrl}}/tasks/{{taskId}}
+Accept: application/json
 Authorization: Bearer {{session}}
 
 ####
