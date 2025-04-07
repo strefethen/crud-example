@@ -70,7 +70,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/componnent/schema/APIError'
+                $ref: '#/components/schemas/APIError'
   /api/items:
     get:
       tags:
