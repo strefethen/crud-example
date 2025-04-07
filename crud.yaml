@@ -39,12 +39,12 @@ servers:
     description: Debug Server
 
 tags:
+  - name: Asynchronous Actions
+    description: Operations related to tasks
   - name: Authentication
     description: Operations related to Authentication
   - name: Items
     description: Operations related to items
-  - name: Asynchronous Actions
-    description: Operations related to tasks
 
 paths:
   /api/create-session:
