@@ -47,7 +47,7 @@ tags:
     description: Operations related to tasks
 
 paths:
-  /api/createSession:
+  /api/create-session:
     post:
       tags:
         - Authentication
@@ -65,6 +65,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionResponse'
+        '400':
+          description: Username not specified
+          content:
+            application/json:
+              schema:
+                $ref: '#/componnent/schema/APIError'
   /api/items:
     get:
       tags:
@@ -407,6 +413,7 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      description: JWT token for use with subsequent API calls.
       bearerFormat: JWT  # Optional: You can specify the format (JWT in this case)
   schemas:
     ItemCount:
@@ -417,8 +424,7 @@ components:
         count:
           type: integer
           description: The total number of items.
-      example:
-        count: 42
+          example: 42
     Item:
       type: object
       description: Represents an item in the system.
@@ -469,6 +475,7 @@ components:
         code: 400
         message: Invalid request parameters
     TaskRequest:
+      description: Async request body
       type: object
       required: [action]
       properties:
@@ -480,8 +487,12 @@ components:
         parameters:
           type: object
           description: Optional parameters specific to the action.
-          additionalProperties: true    
+          additionalProperties: true
+          example:
+            actionRequest:
+              action: "resize"
     TaskResponse:
+      description: Async request response
       type: object
       properties:
         task_id:
@@ -497,6 +508,7 @@ components:
             Optional additional result details, such as new resource size after resize.
           additionalProperties: true
     WaitRequest:
+      description: Request body for the Wait action with distinct properties
       type: object
       required: [action,length]
       properties:
@@ -510,6 +522,7 @@ components:
           description: Length of the pause in milliseconds.
           example: 5
     HoldRequest:
+      description: Request body for the Hold action with distinct properties
       type: object
       required: [action,duration]
       properties:
@@ -523,6 +536,7 @@ components:
           description: Duration of the hold in milliseconds.
           example: 10
     PauseRequest:
+      description: Request body for the Pause action with distinct properties
       type: object
       required: [action,seconds]
       properties:
