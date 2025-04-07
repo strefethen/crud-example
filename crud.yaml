@@ -52,6 +52,7 @@ paths:
       tags:
         - Authentication
       operationId: createSession
+      summary: Create session bearer token
       description: Create a session bearer token for subsequent API calls passed via the Authorization header.
       requestBody:
         content:
@@ -321,6 +322,7 @@ paths:
         - Asynchronous Actions
       security:
         - BearerAuth: []
+      summary: Initiate an asynchronous action
       description: Initiate an asynchronous action on a Item resource
       operationId: createItemAction
       parameters:
@@ -369,7 +371,8 @@ paths:
         - Asynchronous Actions
       security:
         - BearerAuth: []  # Required Bearer token for this endpoint
-      description: Initiate an asynchronous action on an item using oneOf
+      summary: Initiate asynchronous action on item {id}
+      description: Initiate one of four asynchronous actions on the specified item
       operationId: createItemOneOfAction
       parameters:
         - name: id
