@@ -154,7 +154,7 @@ router.post('/api/items/:id([A-Z0-9_-]*/actions)', async (req, res, next: NextFu
   }, 10000);
 });
 
-router.post('/api/items/:id([A-Z0-9_-]*/actions-oneOf)', async (req, res, next: NextFunction) => {
+router.post('/api/items/:id([A-Z0-9_-]*/actions-oneof)', async (req, res, next: NextFunction) => {
   const itemId = req.params.id;
 
   await db.read();

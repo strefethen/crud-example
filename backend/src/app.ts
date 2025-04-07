@@ -13,6 +13,9 @@ app.disable("x-powered-by")
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(req.path);
   res.set('Content-Type', 'application/json');
+  if (req.headers['accept'] && req.headers['accept'] != "application/json") {
+    return next(new APIError(415, "Unsupported media type"));
+  }
   next();
 });
 
@@ -21,7 +24,7 @@ function generateSessionToken(username) {
 }
 
 if (process.env.USE_AUTH && process.env.USE_AUTH === 'true') {
-  app.post('/api/createSession', async (req, res) => {
+  app.post('/api/create-session', async (req, res) => {
     if (!req.body.username) {
       res.status(400).json({ error: 'Username not specified' });
       return;
