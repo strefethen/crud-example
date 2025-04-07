@@ -357,7 +357,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIError'
 
-  /api/items/{id}/actions-oneOf:
+  /api/items/{id}/actions-oneof:
     post:
       tags:
         - Asynchronous Actions
