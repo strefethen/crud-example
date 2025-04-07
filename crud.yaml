@@ -296,6 +296,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ItemCount'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
         '500':
           description: Internal Server Error
           content:
@@ -345,7 +351,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIError'
         '404':
-          description: Foo resource not found.
+          description: Action not found.
           content:
             application/json:
               schema:
