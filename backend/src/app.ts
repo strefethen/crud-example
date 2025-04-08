@@ -39,7 +39,7 @@ if (process.env.USE_AUTH && process.env.USE_AUTH === 'true') {
         console.log(`Session expire user: ${db.data.sessions[sessionIndex - 1].username}`);
         db.data.sessions = db.data.sessions.splice(sessionIndex, 1);
         await db.write();
-      }, 5000);
+      }, 60000);
     }
     await db.write();
     res.json({ token });
