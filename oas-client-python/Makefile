@@ -4,6 +4,7 @@ OUTPUT_DIR=client
 PACKAGE_NAME=api_client
 VENV=.venv
 PYTHON=$(VENV)/bin/python
+PIP=$(VENV)/bin/pip
 OPENAPI_GENERATOR=openapi-generator
 
 .PHONY: all generate install clean venv
@@ -17,7 +18,7 @@ generate:
 		-i $(SPEC_FILE) \
 		-g python \
 		-o $(OUTPUT_DIR)/generated
-	pip install $(OUTPUT_DIR)/generated
+	$(PIP) install $(OUTPUT_DIR)/generated
 
 #	--package-name $(PACKAGE_NAME)
 
