@@ -8,6 +8,9 @@ configuration = openapi_client.Configuration(
     host = "http://localhost:3000"
 )
 
+# Declare api_response globally as it's used below to create the configuration for the ItemsAPI 
+api_response = None
+
 with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = openapi_client.AuthenticationApi(api_client)
@@ -19,6 +22,7 @@ with openapi_client.ApiClient(configuration) as api_client:
         pprint(api_response)
     except ApiException as e:
         print("Exception when calling AuthenticationApi->create_session: %s\n" % e)
+        exit(1)
 
 # Configure Bearer authorization (JWT): BearerAuth
 configuration = openapi_client.Configuration(
