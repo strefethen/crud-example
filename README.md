@@ -1,28 +1,30 @@
 # Example CRUD server/client
 Example client/server calling APIs defined in an OpenAPI spec crud.yaml (located in the client project).
 
-## Setup
-This repo includes three projects:
+## Project Setup
+This repo includes four projects:
 
-* backend - Simple REST API server
-* client - Raw REST API calls
-* [oas-client-ts](#run-the-oas-typescript-axios-client) - REST API client using OAS generated typescript Axios binding
-* [oas-client-python](#python) - REST API client using OAS generated typescript binding
+* **backend** - Simple REST API server
+* **client** - Raw REST API calls
+* **[oas-client-ts](#run-the-oas-typescript-axios-client)** - REST API client using OAS generated typescript Axios binding
+* **[oas-client-python](#python)** - REST API client using OAS generated typescript binding
 
-## Requirements
+## General Requirements
 * yarn
 * Typescript v5.4.2+
 * [OpenAPI generator](https://openapi-generator.tech/docs/installation/)
+* Python 3+
 
-On macOS you can install the generator using homebrew:
+FYI, on macOS you can install the OpenAPI generator using homebrew:
 ```bash
 brew install openapi-generator
 ```
 
-## Python Requirements
-* Python 3+
+## Optional: VSCode REST Client Plugin
+Included with the repo is an ``/api.http`` file, which is useful with the VSCode [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) plugin allowing for execution of API calls directly from the editor.
 
 ## Install packages and build apps
+
 ```bash
 $ git clone https://github.com/strefethen/crud-example.git
 $ cd crud-example
@@ -30,12 +32,17 @@ $ yarn install
 $ yarn build
 ```
 
-## Start the backend
+## backend Project
+The backend is a minimal ExpressJS server that provides the REST API. The server uses LowDB, a basic (read non-production) JSON datastore, to persist data. The backend project isn't intended to be an best practice example of building a API backend rather it's sufficient to demo various aspects of OAS bindings and OpenAPI ecosystem.
+
 ```bash
 $ yarn dev:backend
 ```
 
 Upon graceful shutdown the server persists the data using lowdb to db.json.
+
+### Authentication
+You can optionally enable Bearer Token authorization using the USE_AUTH environment variable. Refer to launch.json for setting this variable when launching in the debugger.
 
 ## Run the hand-written TypeScript API client
 ```bash
