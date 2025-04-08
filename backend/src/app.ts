@@ -104,6 +104,23 @@ const server = app.listen(PORT, async () => {
   console.log(`API Server is running on http://localhost:${PORT}`);
 });
 
+server.on("error", (error: NodeJS.ErrnoException) => {
+  if (error.syscall !== 'listen') throw error;
+
+  switch (error.code) {
+    case 'EADDRINUSE':
+      console.error(`${error.code}: Port ${PORT} is already in use. Set PORT environment variable to override.`);
+      break;
+    case 'EACCES':
+      console.error(`Port ${PORT} requires elevated privileges`);
+      break;
+    default:
+      console.error('Unexpected server error:', error);
+  }
+  
+  process.exit(1); 
+});
+
 // Graceful shutdown
 const shutdown = async () => {
   console.log('Shutting down server...');
