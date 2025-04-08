@@ -60,6 +60,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SessionRequest'
+            example:
+              username: "strefethen"
       responses:
         '200':
           description: JWT token to be used with Authentication Bearer token header
