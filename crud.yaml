@@ -128,7 +128,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Item'
             examples:
-              example:
+              example1:
                 summary: Example request
                 value:
                   name: New Item
@@ -254,6 +254,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Item'
+              example:
+                id: "ABC123"
+                name: Updated Item Name
+                description: Updated item description.
+                price: 20.5
+                createdAt: '2023-01-01T00:00:00Z'
         '400':
           description: Bad Request
           content:
@@ -330,6 +336,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ItemCount'
+              example:
+                count: 42
         '400':
           description: Bad Request
           content:
@@ -385,6 +393,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TaskResponse'
+              example:
+                task_id: "10"
+                status: "WAITING"
+                result:
+                  actionRequest:
+                    action: "resize"
         '400':
           description: Invalid request parameters or action.
           content:
@@ -443,6 +457,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TaskResponse'
+              example:
+                task_id: "10"
+                status: "COMPLETED"
+                result:
+                  actionRequest:
+                    action: "WAIT"
         '400':
           description: Invalid action ID.
           content:
