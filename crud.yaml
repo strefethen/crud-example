@@ -399,6 +399,17 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskRequest'
+            examples:
+              example1:
+                summary: Example of a resize action
+                value:
+                  action: "resize"
+                  parameters:
+                    size: "large"
+              example2:
+                summary: Example of a reboot action
+                value:
+                  action: "reboot"
       responses:
         '202':
           description: Action accepted, task started.
