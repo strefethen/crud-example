@@ -22,18 +22,20 @@ export async function createTask(serviceName: string, itemId: string, task: Item
     return next(new APIError(400, `Invalid request. Task ${task} not supported.`));
   }
 
+  const taskId = nanoid();
+
   const itemTask: Task = {
-    id: nanoid(),
+    id: taskId,
     itemId: itemId,
     status: TaskStatus.PENDING,
     task: task,
-    monitorUrl: `${req.protocol}://${req.hostname}/services/tasks/${serviceName}/${itemId}/status`
+    monitorUrl: `${req.protocol}://${req.hostname}/services/tasks/${serviceName}/${taskId}/status`
   }
   const index = db.data.tasks.push(itemTask) - 1;
   await db.write();
   setTimeout(async () => {
     db.data.tasks[index].status = TaskStatus.COMPLETED
     await db.write();
-  }, 10000);
+  }, 20000);
   return itemTask;
 }

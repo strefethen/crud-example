@@ -211,7 +211,7 @@ router.post('/api/items/:id([A-Z0-9_-]*)/tasks-oneof', async (req, res, next: Ne
     monitorUrl: `${req.protocol}://${req.hostname}/services/tasks/items/${itemId}/status`
   }
   const index = db.data.tasks.push(itemTask) - 1;
-  res.status(202).json(task);
+  res.status(202).json(itemTask);
   await db.write();
 
   const delay = length || duration || seconds || 10000;
@@ -222,7 +222,7 @@ router.post('/api/items/:id([A-Z0-9_-]*)/tasks-oneof', async (req, res, next: Ne
   }, delay);
 });
 
-router.get('/api/tasks/:id([A-Z0-9_-]*)', async (req, res, next: NextFunction) => {
+router.get('/api/services/tasks/items/:id([A-Za-z0-9_-]*)', async (req, res, next: NextFunction) => {
   const taskId = req.params.id;
 
   await db.read();
