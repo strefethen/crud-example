@@ -4,7 +4,7 @@
 @baseUrl = http://localhost:3000/api
 
 # @name createSession
-POST {{baseUrl}}/createSession HTTP/1.1
+POST {{baseUrl}}/create-session HTTP/1.1
 Accept: application/json
 Content-Type: application/json
 
@@ -12,11 +12,11 @@ Content-Type: application/json
   "username": "steve"
 }
 
-####
+###
 
 @session = {{createSession.response.body.token}}
 
-####
+###
 
 # @name createItem
 POST {{baseUrl}}/items  HTTP/1.1
@@ -30,22 +30,42 @@ Authorization: Bearer {{session}}
   "price": 10
 }
 
-####
+###
+
+@newItem = {{createItem.response.body.id}}
+
+###
+
+# @name updateItem
+PUT {{baseUrl}}/items/{{newItem}} HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{session}}
+
+{
+  "name": "New Name",
+  "description": "New Description",
+  "price": 20
+}
+
+###
 
 DELETE {{baseUrl}}/items/{{getItems.response.body.$[0].id}}
 Accept: application/json
 Authorization: Bearer {{session}}
 
-####
+###
 
 GET {{baseUrl}}/items/{{createItem.response.body.$.id}}
 Accept: application/json
 Authorization: Bearer {{session}}
 
-####
+###
 
 # @name getItems
 GET {{baseUrl}}/items
+  ?limit=3
+  &offset=1
 Authorization: Bearer {{session}}
 Accept: application/json
 
@@ -57,64 +77,64 @@ GET {{baseUrl}}/items/{{itemId}}
 Accept: application/json
 Authorization: Bearer {{session}}
 
-####
+###
 
 GET {{baseUrl}}/items/{{createItem.response.body.$.id}}
 Accept: application/json
 Authorization: Bearer {{session}}
 
-####
+###
 
 # @name createTask
-POST {{baseUrl}}/items/10/actions HTTP/1.1
+POST {{baseUrl}}/items/{{createItem.response.body.$.id}}/tasks HTTP/1.1
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{session}}
 
 {
-  "action": "DELAY"
+  "task": "DELAY"
 }
 
-####
+###
 
 # @name createTask
-POST {{baseUrl}}/items/10/actions-oneOf HTTP/1.1
+POST {{baseUrl}}/items/{{createItem.response.body.$.id}}/tasks-oneOf HTTP/1.1
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{session}}
 
 {
-  "action": "WAIT",
+  "task": "WAIT",
   "length": 1000
 }
 
-####
+###
 
 # @name createTask
-POST {{baseUrl}}/items/foo/actions-oneOf HTTP/1.1
+POST {{baseUrl}}/items/foo/tasks-oneOf HTTP/1.1
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{session}}
 
 {
-  "action": "HOLD",
+  "task": "HOLD",
   "duration": 3000
 }
 
-####
+###
 
 # @name createTask
-POST {{baseUrl}}/items/10/actions-oneOf HTTP/1.1
+POST {{baseUrl}}/items/10/tasks-oneOf HTTP/1.1
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{session}}
 
 {
-  "action": "PAUSE",
+  "task": "PAUSE",
   "seconds": 3000
 }
 
-####
+###
 
 @taskId = {{createTask.response.body.$.id}}
 
@@ -122,7 +142,7 @@ GET {{baseUrl}}/tasks/{{taskId}}
 Accept: application/json
 Authorization: Bearer {{session}}
 
-####
+###
 
 
 GET https://docs.vmware.com/en/VMware-Cloud-Director/10.3/VMware-Cloud-Director-Install-Configure-Upgrade-Guide/GUID-66221D98-FA64-43EF-B6DF-5C2CED29FE6A.html
