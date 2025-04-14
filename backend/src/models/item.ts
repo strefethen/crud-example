@@ -11,25 +11,25 @@ export enum TaskStatus {
   COMPLETED = "COMPLETED"
 }
 
-export enum ItemAction {
+export enum ItemTask {
   DELAY = "DELAY",
   WAIT = "WAIT",
   HOLD = "HOLD",
   PAUSE = "PAUSE"
 }
 
-export interface WaitAction {
-  action: ItemAction.WAIT,
+export interface WaitTask {
+  task: ItemTask.WAIT,
   length: number
 }
 
-export interface HoldAction {
-  action: ItemAction.HOLD,
+export interface HoldTask {
+  task: ItemTask.HOLD,
   duration: number
 }
 
-export interface PauseAction {
-  action: ItemAction.PAUSE,
+export interface PauseTask {
+  task: ItemTask.PAUSE,
   seconds: number
 }
 
@@ -37,7 +37,8 @@ export interface Task {
   id: string;
   itemId: string;
   status: TaskStatus
-  action: ItemAction
+  task: ItemTask
+  monitorUrl: string
 }
 
 export interface ErrorResponse {

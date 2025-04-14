@@ -1,12 +1,12 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
-import { Item } from './models/item.js';
+import { Item, Task } from './models/item.js';
 import { User } from './models/user.js';
 
 interface JSONData {
   items: Item[];
   sessions: User[];
-  tasks: []
+  tasks: Task[]
 }
 
 const defaultData = { 
