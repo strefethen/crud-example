@@ -94,6 +94,9 @@ Authorization: Bearer {{session}}
 {
   "task": "DELAY"
 }
+###
+
+@taskId = {{createTask.response.body.$.id}}
 
 ###
 
@@ -136,9 +139,7 @@ Authorization: Bearer {{session}}
 
 ###
 
-@taskId = {{createTask.response.body.$.id}}
-
-GET {{baseUrl}}/tasks/{{taskId}}
+GET {{baseUrl}}/services/tasks/items/{{taskId}}
 Accept: application/json
 Authorization: Bearer {{session}}
 
