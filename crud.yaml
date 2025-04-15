@@ -527,7 +527,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIError'
-
+  /api/tasks:
+    get:
+      tags:
+        - Asynchronous Actions
+      security:
+        - BearerAuth: []  # Required Bearer token for this endpoint
+      summary: Retrieve a list of tasks
+      description: Fetches a list of all tasks available in the system. This endpoint does not require any parameters.
+      operationId: getTasks
+      responses:
+        '200':
+          description: A list of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                maxLength: 1024
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+              example:
+                - task_id: "10"
+                  status: "COMPLETED"
+                  result:
+                    actionRequest:
+                      action: "resize"
+                - task_id: "11"
+                  status: "WAITING"
+                  result:
+                    actionRequest:
+                      action: "reboot"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '415':
+          description: Unsupported media type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        default:
+          description: An unexpected error occurred        
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
 components:
   securitySchemes:
     BearerAuth:
