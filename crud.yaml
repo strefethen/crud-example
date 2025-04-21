@@ -52,8 +52,8 @@ paths:
       tags:
         - Authentication
       operationId: createSession
-      summary: Create session bearer token.
-      description: Create a session bearer token for subsequent API calls passed via the Authorization header.
+      summary: Create session bearer JWT token.
+      description: Create a session bearer JWT token for subsequent API calls, must be passed via the Authorization header.
       requestBody:
         description: Request to create a new API session for the provided username.
         content:
@@ -64,7 +64,7 @@ paths:
               username: "strefethen"
       responses:
         '200':
-          description: JWT token to be used with Authentication Bearer token header
+          description: Returns JWT token to be used with Authentication Bearer token header
           content:
             application/json:
               schema:
@@ -245,7 +245,7 @@ paths:
           required: true
           description: The unique identifier of the item to update. This ID can be obtained from the list of items.
           schema:
-            type: integer
+            type: string
       requestBody:
         description: The updated details of the item.
         required: true
@@ -418,7 +418,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TaskResponse'
               example:
-                task_id: "10"
+                task_id: "CBA910"
                 status: "WAITING"
                 result:
                   actionRequest:
@@ -498,7 +498,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TaskResponse'
               example:
-                task_id: "10"
+                task_id: "A109BC"
                 status: "COMPLETED"
                 result:
                   actionRequest:
@@ -547,12 +547,12 @@ paths:
                 items:
                   $ref: '#/components/schemas/TaskResponse'
               example:
-                - task_id: "10"
+                - task_id: "A67C90"
                   status: "COMPLETED"
                   result:
                     actionRequest:
                       action: "resize"
-                - task_id: "11"
+                - task_id: "A5B4C9"
                   status: "WAITING"
                   result:
                     actionRequest:
@@ -601,7 +601,7 @@ components:
           type: string
           description: The unique identifier of the item.
           readOnly: true
-          pattern: '^[ABC0-9]{1,10}$'
+          pattern: '^[ABC0-9]{6}$'
         name:
           type: string
           description: The name of the item.
@@ -663,11 +663,20 @@ components:
       type: object
       properties:
         task_id:
+          readOnly: true
           type: string
-          example: "10"
+          pattern: '^[ABC0-9]{6}$'
+          example: "A310BC"
+        itemId:
+          type: string
+        task:
+          type: string
+          enum: [DELAY, WAIT, HOLD, PAUSE]
+          example: "DELAY"
         status:
           type: string
           enum: [WAITING, COMPLETED]
+          readOnly: true
           example: "COMPLETED"
         result:
           type: object
